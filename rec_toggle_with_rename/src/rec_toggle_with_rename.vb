@@ -1,0 +1,197 @@
+' ================== INIT CONFIG ==================
+    dim pathTitleName       as string = "FileNames"
+    dim filename1TextField  as string = "Filename1.Text"
+    dim filename2TextField  as string = "Filename2.Text"
+    dim path1TextField      as string = "Path1.Text"
+    dim path2TextField      as string = "Path2.Text"
+    dim consoleTextField    as string = "Console.Text"
+' ================== =========== ==================
+' ==================== START TIMER ======================
+    dim startTime       as Datetime  = System.DateTime.Now
+    dim scriptTime      as TimeSpan
+' ==================== ============ ======================
+' ================== INTERNAL VARIABLES =========================
+    dim config              as new system.xml.xmldocument
+    config.loadxml(API.XML)
+    dim pathTitleInput      as object = Input.Find(pathTitleName)
+    dim fileNames()         as string = {   "", ""}
+    dim newFileNames()      as string = {   pathTitleInput.Text(filename1TextField) , pathTitleInput.Text(filename2TextField)   }
+    dim newPaths()          as string = {   pathTitleInput.Text(path1TextField)     , pathTitleInput.Text(path2TextField)       }
+    dim humanRedable()      as string = {   "First", "Second"}
+
+    dim consoleMessage as string = ""
+
+    dim isRecording         as boolean
+    dim isSecondRecorder    as boolean = false
+
+    dim isError             as boolean = true
+    dim isRename            as boolean = false
+ 
+' ===============================================================
+' ================== PART ONE. Checking recorder==================
+    pathTitleInput.Text(consoleTextField) = ""
+    dim recordingNode as XMLNode = config.SelectSingleNode("/vmix/recording")
+    if recordingNode isnot nothing then       
+        isRecording = Convert.ToBoolean(recordingNode.InnerText)
+        if isRecording then 
+            ' console.wl("DEBUG (line " & me.CurrentLine.tostring() & "): recording in progress.")
+
+            for Each fileName as string in fileNames
+                dim index as integer = Array.IndexOf(fileNames,fileName) 
+                if recordingNode.Attributes.GetNamedItem("filename" & (index + 1).toString()) isnot nothing then
+                if index = 1 then 
+                    isSecondRecorder = true
+                end if
+                fileNames(index) = recordingNode.Attributes.GetNamedItem("filename" + (index + 1).toString()).Value
+                ' console.wl("DEBUG (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder path: " &  fileNames(index))
+            else 
+                if index = 0 then
+                    console.wl("ERROR (line " & me.CurrentLine.tostring() & "): There is no `filename " & (index + 1).toString() & "`in API`")
+                else 
+                    ' console.wl("DEBUG (line " & me.CurrentLine.tostring() & "): There is no second recorder.")
+                end if 
+            end if
+            next
+        else 
+            ' console.wl("DEBUG (line " & me.CurrentLine.tostring() & "): recording stopped.")      
+        end if 
+    else 
+        console.wl("ERROR (line " & me.CurrentLine.tostring() & "): There is no `recording` Node in API")
+    end if
+' ================== =========== ===============
+' ================== Doing path works ========================================
+    if isRecording then
+        if not isSecondRecorder then
+            ReDim Preserve newFileNames(0)
+            ReDim Preserve fileNames(0)
+            ReDim Preserve newPaths(0)
+        end if
+        
+        isRename = true
+
+        for Each newFileName as string in newFileNames 
+            dim index               as integer = Array.indexOf(newFileNames, newFileName)
+            dim recDirectory        as string = Path.GetDirectoryName(fileNames(index))
+            dim extention           as string = Path.GetExtension(fileNames(index))
+            dim newDir              as string = ""
+            
+            if newPaths(index) <> "" then
+                newDir = Path.GetDirectoryName(newPaths(index))
+            end if 
+
+            dim newOnlyFileName     as string = Path.GetFileNameWithoutExtension(newFileName)
+            dim newFileExtention    as string  = Path.GetExtension(newFileName)
+
+            if newFileExtention <> ""  AND newFileExtention <> extention then 
+                console.wl("ATTENTION (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder new file name has wrong exention (" & newFileExtention & "<>" & extention & ")!")
+                console.wl("ATTENTION (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder: Script can handle it!")
+            end if 
+
+            newFileExtention = extention
+
+            if newOnlyFileName = "" then 
+                console.wl("ATTENTION (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder new filename is empty. Recorded file will not be renamed/moved!")
+                consoleMessage += humanRedable(index) & " recorder: new filename is empty" & Environment.NewLine
+                isRename = false
+
+            else 
+                dim isInvalid       as boolean = false
+                for each character  as string in Path.GetInvalidFileNameChars()
+                    if newOnlyFileName.Contains(character) then
+                        isInvalid = true
+                    end if
+                next
+                if isInvalid then 
+                    console.wl("ERROR (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder > new filename has invalid characters! Recorded file will not be renamed/moved!")
+                    consoleMessage += humanRedable(index) & " recorder: new filename has  ivalid characters!" & Environment.NewLine
+                    isRename = false
+                end if 
+            end if
+
+            if newDir = "" then 
+                console.wl("ATTENTION (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder > new path is empty file remains in the same directory as default! ")
+                newDir = recDirectory
+            else 
+                dim isInvalid       as boolean = false
+                for each character  as string in Path.GetInvalidPathChars()
+                    if newOnlyFileName.Contains(character) then
+                        isInvalid = true
+                    end if
+                next
+                if isInvalid then 
+                    console.wl("ERROR (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder > new path has ivalid characters!")
+                    consoleMessage += humanRedable(index) & " recorder: new path has has ivalid characters!" & Environment.NewLine
+                    isRename = false
+                else if not Directory.Exists(newDir) Then
+                    console.wl("ERROR (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder > new path not exists!")
+                    consoleMessage += humanRedable(index) & " recorder: new path not exists!" & Environment.NewLine
+                    isRename = false
+                end if
+
+            end if
+            if isRename then
+                newFileNames(index) = Path.Combine(newDir, newOnlyFileName & newFileExtention)
+                dim counter         as integer = 1
+                if File.Exists(newFileNames(index)) then 
+                    dim tempName    as string = Path.Combine(newDir, newOnlyFileName & newFileExtention)
+                    while File.Exists(tempName)
+                        tempName = Path.Combine(newDir, newOnlyFileName & "_" & counter.toString() & newFileExtention)
+                        counter += 1
+                    end while
+                    console.wl("ATTENTION (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder > file already exists making new name!")
+                    newFileNames(index) = tempName
+                end if 
+            else
+                newFileNames(index) = fileNames(index)
+            end if 
+
+            ' console.wl(newFileNames(index))
+        next
+
+    end if     
+
+' ================== PART TWO. DOING STUFF ==================
+
+    if isRecording then 
+        if isRename then
+            ' console.wl("DEBUG (line " & me.CurrentLine.tostring() & "): Stopping record...")
+            dim movingErr as boolean = false
+            API.Function("StopRecording")
+            consoleMessage = "Recording stopped!"
+            for each newFileName as string in newFileNames
+                dim index as integer = Array.IndexOf(newFileNames,newFileName) 
+                consoleMessage += Environment.NewLine & "File moving to: " & newFileName & " ..."
+                pathTitleInput.Text(consoleTextField) = consoleMessage
+                try 
+                    File.Move(fileNames(index), newFileName)
+                    ' sleep(5000)
+                    ' throw New System.Exception("Something went wrong!")
+                    consoleMessage += " OK!"
+                Catch e As Exception
+                    console.wl("ERROR (line " & me.CurrentLine.tostring() & "): File moving error: " & e.toString())
+                    consoleMessage += "The process failed: " & e.ToString()
+                    movingErr = true
+                End Try
+                ' console.wl("DEBUG (line " & me.CurrentLine.tostring() & "): File will be  renamed/moved: " & newFileName )              
+            next
+            if not movingErr then
+                consoleMessage += Environment.NewLine & "All files moved successfully!"
+            else 
+                consoleMessage += Environment.NewLine & "ERROR(s) occured!"
+            end if 
+            pathTitleInput.Text(consoleTextField) = consoleMessage
+        else 
+            console.wl("ERROR (line " & me.CurrentLine.tostring() & "): There ERROR! No Actions!")
+        end if
+    else
+        ' console.wl("DEBUG (line " & me.CurrentLine.tostring() & "): Strarting record...") 
+        API.Function("StartRecording")
+        consoleMessage = "Recording started!"
+    end if
+
+' ================== =========== ===============
+
+pathTitleInput.Text(consoleTextField) = consoleMessage
+
+scriptTime = System.DateTime.Now - startTime
+Console.WriteLine("Script done in " + scriptTime.TotalMilliseconds.ToString() + " milliseconds")
