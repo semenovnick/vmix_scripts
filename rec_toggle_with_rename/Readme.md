@@ -7,7 +7,7 @@ The script toggling rec button and renaming last recorded file based on contents
 Script gets info about new file names and new path from ttl/info_ttl.gtzip or any your personal GT title, which contains this fields
 
 - new name for recorder 1 (you can use only name without extention, script adds proper extention)
-- new path for recorder 1 (if path contains file in the end, script gets only path ignoring filename, name should be in name field) Path should end with "\\"
+- new path for recorder 1 (if path contains file in the end, script gets only path ignoring filename, name should be in name field) Path should end with `\`
 - new name for recorder 2
 - new path for recorder 2
 - script stdout interactive field
