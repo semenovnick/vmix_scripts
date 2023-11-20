@@ -35,22 +35,22 @@
         isRecording = Convert.ToBoolean(recordingNode.InnerText)
         if isRecording then 
             ' console.wl("DEBUG (line " & me.CurrentLine.tostring() & "): recording in progress.")
-
-            for Each fileName as string in fileNames
-                dim index as integer = Array.IndexOf(fileNames,fileName) 
-                if recordingNode.Attributes.GetNamedItem("filename" & (index + 1).toString()) isnot nothing then
-                if index = 1 then 
+            dim fileIndex as integer = 0
+            for Each fileName as string in fileNames              
+                if recordingNode.Attributes.GetNamedItem("filename" & (fileIndex + 1).toString()) isnot nothing then
+                if fileIndex = 1 then 
                     isSecondRecorder = true
                 end if
-                fileNames(index) = recordingNode.Attributes.GetNamedItem("filename" + (index + 1).toString()).Value
-                ' console.wl("DEBUG (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder path: " &  fileNames(index))
+                fileNames(fileIndex) = recordingNode.Attributes.GetNamedItem("filename" + (fileIndex + 1).toString()).Value
+                ' console.wl("DEBUG (line " & me.CurrentLine.tostring() & "): " & humanRedable(fileIndex) & " recorder path: " &  fileNames(fileIndex))
             else 
-                if index = 0 then
-                    console.wl("ERROR (line " & me.CurrentLine.tostring() & "): There is no `filename " & (index + 1).toString() & "`in API`")
+                if fileIndex = 0 then
+                    console.wl("ERROR (line " & me.CurrentLine.tostring() & "): There is no `filename " & (fileIndex + 1).toString() & "`in API`")
                 else 
                     ' console.wl("DEBUG (line " & me.CurrentLine.tostring() & "): There is no second recorder.")
                 end if 
             end if
+            fileIndex += 1
             next
         else 
             ' console.wl("DEBUG (line " & me.CurrentLine.tostring() & "): recording stopped.")      
@@ -68,30 +68,29 @@
         end if
         
         isRename = true
-
+        dim newFileIndex as integer = 0
         for Each newFileName as string in newFileNames 
-            dim index               as integer = Array.indexOf(newFileNames, newFileName)
-            dim recDirectory        as string = Path.GetDirectoryName(fileNames(index))
-            dim extention           as string = Path.GetExtension(fileNames(index))
+            dim recDirectory        as string = Path.GetDirectoryName(fileNames(newFileIndex))
+            dim extention           as string = Path.GetExtension(fileNames(newFileIndex))
             dim newDir              as string = ""
             
-            if newPaths(index) <> "" then
-                newDir = Path.GetDirectoryName(newPaths(index))
+            if newPaths(newFileIndex) <> "" then
+                newDir = Path.GetDirectoryName(newPaths(newFileIndex))
             end if 
 
             dim newOnlyFileName     as string = Path.GetFileNameWithoutExtension(newFileName)
             dim newFileExtention    as string  = Path.GetExtension(newFileName)
 
             if newFileExtention <> ""  AND newFileExtention <> extention then 
-                console.wl("ATTENTION (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder new file name has wrong exention (" & newFileExtention & "<>" & extention & ")!")
-                console.wl("ATTENTION (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder: Script can handle it!")
+                console.wl("ATTENTION (line " & me.CurrentLine.tostring() & "): " & humanRedable(newFileIndex) & " recorder new file name has wrong exention (" & newFileExtention & "<>" & extention & ")!")
+                console.wl("ATTENTION (line " & me.CurrentLine.tostring() & "): " & humanRedable(newFileIndex) & " recorder: Script can handle it!")
             end if 
 
             newFileExtention = extention
 
             if newOnlyFileName = "" then 
-                console.wl("ATTENTION (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder new filename is empty. Recorded file will not be renamed/moved!")
-                consoleMessage += humanRedable(index) & " recorder: new filename is empty" & Environment.NewLine
+                console.wl("ATTENTION (line " & me.CurrentLine.tostring() & "): " & humanRedable(newFileIndex) & " recorder new filename is empty. Recorded file will not be renamed/moved!")
+                consoleMessage += humanRedable(newFileIndex) & " recorder: new filename is empty" & Environment.NewLine
                 isRename = false
 
             else 
@@ -102,14 +101,14 @@
                     end if
                 next
                 if isInvalid then 
-                    console.wl("ERROR (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder > new filename has invalid characters! Recorded file will not be renamed/moved!")
-                    consoleMessage += humanRedable(index) & " recorder: new filename has  ivalid characters!" & Environment.NewLine
+                    console.wl("ERROR (line " & me.CurrentLine.tostring() & "): " & humanRedable(newFileIndex) & " recorder > new filename has invalid characters! Recorded file will not be renamed/moved!")
+                    consoleMessage += humanRedable(newFileIndex) & " recorder: new filename has  ivalid characters!" & Environment.NewLine
                     isRename = false
                 end if 
             end if
 
             if newDir = "" then 
-                console.wl("ATTENTION (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder > new path is empty file remains in the same directory as default! ")
+                console.wl("ATTENTION (line " & me.CurrentLine.tostring() & "): " & humanRedable(newFileIndex) & " recorder > new path is empty file remains in the same directory as default! ")
                 newDir = recDirectory
             else 
                 dim isInvalid       as boolean = false
@@ -119,33 +118,34 @@
                     end if
                 next
                 if isInvalid then 
-                    console.wl("ERROR (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder > new path has ivalid characters!")
-                    consoleMessage += humanRedable(index) & " recorder: new path has has ivalid characters!" & Environment.NewLine
+                    console.wl("ERROR (line " & me.CurrentLine.tostring() & "): " & humanRedable(newFileIndex) & " recorder > new path has ivalid characters!")
+                    consoleMessage += humanRedable(newFileIndex) & " recorder: new path has has ivalid characters!" & Environment.NewLine
                     isRename = false
                 else if not Directory.Exists(newDir) Then
-                    console.wl("ERROR (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder > new path not exists!")
-                    consoleMessage += humanRedable(index) & " recorder: new path not exists!" & Environment.NewLine
+                    console.wl("ERROR (line " & me.CurrentLine.tostring() & "): " & humanRedable(newFileIndex) & " recorder > new path not exists!")
+                    consoleMessage += humanRedable(newFileIndex) & " recorder: new path not exists!" & Environment.NewLine
                     isRename = false
                 end if
 
             end if
             if isRename then
-                newFileNames(index) = Path.Combine(newDir, newOnlyFileName & newFileExtention)
+                newFileNames(newFileIndex) = Path.Combine(newDir, newOnlyFileName & newFileExtention)
                 dim counter         as integer = 1
-                if File.Exists(newFileNames(index)) then 
+                if File.Exists(newFileNames(newFileIndex)) then 
                     dim tempName    as string = Path.Combine(newDir, newOnlyFileName & newFileExtention)
                     while File.Exists(tempName)
                         tempName = Path.Combine(newDir, newOnlyFileName & "_" & counter.toString() & newFileExtention)
                         counter += 1
                     end while
-                    console.wl("ATTENTION (line " & me.CurrentLine.tostring() & "): " & humanRedable(index) & " recorder > file already exists making new name!")
-                    newFileNames(index) = tempName
+                    console.wl("ATTENTION (line " & me.CurrentLine.tostring() & "): " & humanRedable(newFileIndex) & " recorder > file already exists making new name!")
+                    newFileNames(newFileIndex) = tempName
                 end if 
             else
-                newFileNames(index) = fileNames(index)
+                newFileNames(newFileIndex) = fileNames(newFileIndex)
             end if 
 
-            ' console.wl(newFileNames(index))
+            ' console.wl(newFileNames(newFileIndex))
+            newFileIndex += 1
         next
 
     end if     
@@ -158,12 +158,12 @@
             dim movingErr as boolean = false
             API.Function("StopRecording")
             consoleMessage = "Recording stopped!"
-            for each newFileName as string in newFileNames
-                dim index as integer = Array.IndexOf(newFileNames,newFileName) 
+            dim newFileNameIndex as integer = 0 
+            for each newFileName as string in newFileNames 
                 consoleMessage += Environment.NewLine & "File moving to: " & newFileName & " ..."
                 pathTitleInput.Text(consoleTextField) = consoleMessage
                 try 
-                    File.Move(fileNames(index), newFileName)
+                    File.Move(fileNames(newFileNameIndex), newFileName)
                     ' sleep(5000)
                     ' throw New System.Exception("Something went wrong!")
                     consoleMessage += " OK!"
@@ -173,6 +173,7 @@
                     movingErr = true
                 End Try
                 ' console.wl("DEBUG (line " & me.CurrentLine.tostring() & "): File will be  renamed/moved: " & newFileName )              
+            newFileNameIndex += 1
             next
             if not movingErr then
                 consoleMessage += Environment.NewLine & "All files moved successfully!"
