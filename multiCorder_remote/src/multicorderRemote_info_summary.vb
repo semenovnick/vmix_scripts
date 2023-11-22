@@ -1,14 +1,14 @@
 ' ================== INIT CONFIG ==================
-    dim monitorInputName       as string = "MultiMonitor"
-    dim RECTextField        as string = "REC.Text"
-    dim inputsTextField     as string = "Inputs.Text"
-    dim foldersTextField    as string = "Folders.Text"
+    dim monitorInputName        as string = "MultiMonitor"
+    dim RECTextField            as string = "REC.Text"
+    dim inputsTextField         as string = "Inputs.Text"
+    dim foldersTextField        as string = "Folders.Text"
 
-    dim codecTextField         as string = "Codec.Text"
-    dim audioSourceTextField      as string = "Audio_Source.Text"
-    dim intervalTextField     as string = "Interval.Text"
+    dim codecTextField          as string = "Codec.Text"
+    dim audioSourceTextField    as string = "Audio_Source.Text"
+    dim intervalTextField       as string = "Interval.Text"
     dim fileFormatTextField     as string = "File_format.Text"
-    dim wavTextField     as string = "IsWAV.Text"
+    dim wavTextField            as string = "IsWAV.Text"
 ' ================== =========== ==================
 
 ' ==================== START TIMER ======================
@@ -27,12 +27,12 @@
     dim foldersText     as string = ""
 
     dim isRecording     as boolean = false
-    dim config              as new system.xml.xmldocument
+    dim config          as new system.xml.xmldocument
     config.loadxml(API.XML)
 
-    dim monitorInput as object = Input.Find(monitorInputName)
+    dim monitorInput    as object = Input.Find(monitorInputName)
 
-    dim recordingNode       as XMLNode = config.SelectSingleNode("/vmix/multiCorder")
+    dim recordingNode   as XMLNode = config.SelectSingleNode("/vmix/multiCorder")
     
     if recordingNode isnot nothing then       
         isRecording = Convert.ToBoolean(recordingNode.InnerText)
@@ -40,25 +40,25 @@
         console.wl("ERROR (line " & me.CurrentLine.tostring() & "): There is no `recording` Node in API")
     end if
 
-    dim codecText         as string = ""
-    dim audioSourceText      as string = ""
-    dim intervalText     as string = ""
-    dim fileFormatText     as string = ""
-    dim wavText     as string = ""
+    dim codecText           as string = ""
+    dim audioSourceText     as string = ""
+    dim intervalText        as string = ""
+    dim fileFormatText      as string = ""
+    dim wavText             as string = ""
 
 
 
 ' ========================= GET CURRENT SETTINGS ============================
     if not isError then
         try 
-            dim vmixAssemblyTemp As Reflection.Assembly = Reflection.Assembly.GetEntryAssembly()            
-            dim mySettingsTypeName as string = "vMix" & "." & "My" & "." & "MySettings"
-            dim mySettingsType as type = vmixAssemblyTemp.gettype(mySettingsTypeName)
-            Dim getSettingsMethod As Reflection.MethodInfo = mySettingsType.GetMethod("get_a")
-            Dim mySettingsInstance As object = activator.CreateInstance(mySettingsType)
+            dim vmixAssemblyTemp    as Reflection.Assembly = Reflection.Assembly.GetEntryAssembly()            
+            dim mySettingsTypeName  as string = "vMix" & "." & "My" & "." & "MySettings"
+            dim mySettingsType      as type = vmixAssemblyTemp.gettype(mySettingsTypeName)
+            dim getSettingsMethod   as Reflection.MethodInfo = mySettingsType.GetMethod("get_a")
+            dim mySettingsInstance  as object = activator.CreateInstance(mySettingsType)
             currentSettings = getSettingsMethod.invoke(mySettingsInstance, Nothing)
 
-            Dim mySettingsXML As XmlDocument = New XmlDocument()
+            dim mySettingsXML       as XmlDocument = New XmlDocument()
             multiCorderSettingsNode = mySettingsXML.CreateElement("MultiCorderSettings")
             if currentSettings.MultiCorderSettings isnot nothing then 
                 multiCorderSettingsNode.InnerXml = currentSettings.MultiCorderSettings
@@ -82,8 +82,8 @@
 
     dim multicorderSettingsNodes    as XMLNodeList  = multiCorderSettingsNode.SelectNodes("*")
     ' ============= TYPE CONSTANTS ===========
-        dim type_INPUT   as integer = 1
-        dim type_OUTPUT as integer = 0
+        dim type_INPUT      as integer = 1
+        dim type_OUTPUT     as integer = 0
         dim type_DELETED    as integer = -1
     ' ===================================
 
@@ -93,8 +93,8 @@
         ' ========================== 
         if node.Name.toString().split(".").length > 1 then
         ' ==================== on/off + FOLDERS ============================
-            dim source as string = node.Name.toString().split(".")(1)
-            dim nodeType as string = node.Name.toString().split(".")(0)
+            dim source      as string = node.Name.toString().split(".")(1)
+            dim nodeType    as string = node.Name.toString().split(".")(0)
 
             if source.ToLower().StartsWith("output") then 
                 inputType = type_OUTPUT
@@ -191,15 +191,15 @@
 ' ===================================================================
 ' ===================================================================
     console.wl("================")
-    monitorInput.text(RECTextField) = RECText
-    monitorInput.text(inputsTextField) = inputsText
+    monitorInput.text(RECTextField)     = RECText
+    monitorInput.text(inputsTextField)  = inputsText
     monitorInput.text(foldersTextField) = foldersText
 
-    monitorInput.text(codecTextField) = codecText
+    monitorInput.text(codecTextField)       = codecText
     monitorInput.text(audioSourceTextField) = audioSourceText
-    monitorInput.text(intervalTextField) = intervalText
-    monitorInput.text(fileFormatTextField) = fileFormatText
-    monitorInput.text(wavTextField) = wavText
+    monitorInput.text(intervalTextField)    = intervalText
+    monitorInput.text(fileFormatTextField)  = fileFormatText
+    monitorInput.text(wavTextField)         = wavText
 
 
     if isRecording then
