@@ -64,7 +64,7 @@
     <FFMPEGFormatXML>&lt;format&gt;&lt;name&gt;MPEG-2&lt;/name&gt;&lt;extensions selectedIndex="0"&gt;&lt;extension name="Transport Stream (.ts)" ext=".ts" type="mpegts" /&gt;&lt;extension name="Program Stream (.mpg)" ext=".mpg" type="mpeg" /&gt;&lt;/extensions&gt;&lt;video codec="mpeg2video" selectedIndex="0"&gt;&lt;bitRate&gt;8M&lt;/bitRate&gt;&lt;bitRate&gt;10M&lt;/bitRate&gt;&lt;bitRate&gt;12M&lt;/bitRate&gt;&lt;bitRate&gt;15M&lt;/bitRate&gt;&lt;bitRate&gt;25M&lt;/bitRate&gt;&lt;bitRate&gt;50M&lt;/bitRate&gt;&lt;bitRate&gt;75M&lt;/bitRate&gt;&lt;/video&gt;&lt;audio codec="mp2" selectedIndex="0"&gt;&lt;bitRate&gt;384k&lt;/bitRate&gt;&lt;bitRate&gt;192k&lt;/bitRate&gt;&lt;bitRate&gt;128k&lt;/bitRate&gt;&lt;bitRate&gt;64k&lt;/bitRate&gt;&lt;/audio&gt;&lt;command&gt;-pix_fmt yuv420p -vcodec {video_codec} -maxrate:v {video_bitrate} -minrate:v {video_bitrate} -b:v {video_bitrate} -acodec {audio_codec} -b:a {audio_bitrate} -f {extension_type}&lt;/command&gt;&lt;interlacedSupported /&gt;&lt;/format&gt;</FFMPEGFormatXML>
   </RecordingSettings2>
   <MultiCorderSettings>
-    <CodecDevice>@device:dmo:{191FABD5-C275-45B8-9C75-57132CDEAB73}{33D9A760-90C8-11D0-BD43-00A0C911CE86}32514853-0000-0010-8000-00aa00389b71</CodecDevice>
+    <CodecDevice>@device:dmo:{FE16B88E-E919-4042-9200-0937BCB9522B}{33D9A760-90C8-11D0-BD43-00A0C911CE86}</CodecDevice>
     <MPEGBitRate>8</MPEGBitRate>
     <AudioBitRate>128</AudioBitRate>
     <MultiCorderAudioSource>0</MultiCorderAudioSource>
@@ -114,6 +114,7 @@
     <MultiCorderFolder.c89b2a2b-e495-45ea-ab54-f1a300e6c367>D:\rec</MultiCorderFolder.c89b2a2b-e495-45ea-ab54-f1a300e6c367>
     <MultiCorderEnabled.89a62a90-481f-4355-bbac-5b18d884aca9>0</MultiCorderEnabled.89a62a90-481f-4355-bbac-5b18d884aca9>
     <MultiCorderFolder.89a62a90-481f-4355-bbac-5b18d884aca9>D:\Arab\rec</MultiCorderFolder.89a62a90-481f-4355-bbac-5b18d884aca9>
+    <VMXQuality>50</VMXQuality>
   </MultiCorderSettings>
   <OverlaySettings>
     <Mode0>0</Mode0>
