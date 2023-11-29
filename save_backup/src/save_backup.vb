@@ -1,7 +1,7 @@
 ' ===================== USER DEFINED SETTINGS =======================================================
 
     dim backupFolderName as string = "BACKUP"
-    dim backupTemplate as string = "$NAME-backup_$DAY_$MONTH_$mSEC"
+    dim backupTemplate as string = "$NAME-backup_$DAY_$MONTH"
 
     ' ==================================================================
     '   $NAME - project name
@@ -61,15 +61,28 @@
         End If
 
         dim backupDirectory as string = Path.combine(presetDirectory,backupFolderName)
-        dim backupName As String = backupTemplate.Replace("$NAME", presetName).Replace("$YEAR", startTime.toString("yyyy")).Replace("$YY", startTime.toString("yy")).Replace("$MONTH", startTime.toString("MM")).Replace("$DAY", startTime.toString("dd")).Replace("$HOUR", startTime.toString("HH")).Replace("$MIN", startTime.toString("mm")).Replace("$SEC", startTime.toString("ss")).Replace("$mSEC", startTime.toString("fff")) & presetExtention                
+        dim backupName As String = backupTemplate.Replace("$NAME", presetName).Replace("$YEAR", startTime.toString("yyyy")).Replace("$YY", startTime.toString("yy")).Replace("$MONTH", startTime.toString("MM")).Replace("$DAY", startTime.toString("dd")).Replace("$HOUR", startTime.toString("HH")).Replace("$MIN", startTime.toString("mm")).Replace("$SEC", startTime.toString("ss")).Replace("$mSEC", startTime.toString("fff"))            
         ' console.wl(backupName)
-        backupFullPath = Path.Combine(backupDirectory, backupName )
+        backupFullPath = Path.Combine(backupDirectory, backupName & presetExtention )
+
+        dim counter         as integer = 1
+
+        if File.Exists(backupFullPath) then 
+            dim tempFileName    as string = backupFullPath
+            while File.Exists(tempFileName)
+                tempFileName =  Path.Combine(backupDirectory, backupName & "_" & counter.toString() & presetExtention)
+                counter += 1
+            end while
+            console.wl("ATTENTION (line " & me.CurrentLine.tostring() & "): file already exists making new name!")
+            backupFullPath = tempFileName
+        end if 
+
         try
                 API.Function("SavePreset", Value:= backupFullPath)
                 API.Function("SavePreset", Value:= presetFullPath)
         catch e as Exception
                 console.WL("ATTENTION ( line: " & me.CurrentLine.tostring()& "): Some error when running API SavePreset... saving im MyDocuments")
-                presetFullPath = Path.combine(myDocuments,tempFolder)              
+                presetFullPath = Path.Combine(Path.Combine(myDocuments, tempFolder), tempName)              
                 API.Function("SavePreset", Value:= presetFullPath)
         end try
 ' ===================== =============================== =============================================
