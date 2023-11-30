@@ -59,7 +59,7 @@
         End If
 
         dim backupDirectory as string = Path.combine(presetDirectory,backupFolderName)
-        dim backupName      аs String = backupTemplate.Replace("$NAME", presetName).Replace("$YEAR", startTime.toString("yyyy")).Replace("$YY", startTime.toString("yy")).Replace("$MONTH", startTime.toString("MM")).Replace("$DAY", startTime.toString("dd")).Replace("$HOUR", startTime.toString("HH")).Replace("$MIN", startTime.toString("mm")).Replace("$SEC", startTime.toString("ss")).Replace("$mSEC", startTime.toString("fff"))            
+        dim backupName      as String = backupTemplate.Replace("$NAME", presetName).Replace("$YEAR", startTime.toString("yyyy")).Replace("$YY", startTime.toString("yy")).Replace("$MONTH", startTime.toString("MM")).Replace("$DAY", startTime.toString("dd")).Replace("$HOUR", startTime.toString("HH")).Replace("$MIN", startTime.toString("mm")).Replace("$SEC", startTime.toString("ss")).Replace("$mSEC", startTime.toString("fff"))            
 
         ' ================== Checking for Invalid Symbols ========================
             dim replaceWrongCharacterString as string = "_"
