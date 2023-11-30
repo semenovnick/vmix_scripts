@@ -63,6 +63,16 @@
         dim backupDirectory as string = Path.combine(presetDirectory,backupFolderName)
         dim backupName As String = backupTemplate.Replace("$NAME", presetName).Replace("$YEAR", startTime.toString("yyyy")).Replace("$YY", startTime.toString("yy")).Replace("$MONTH", startTime.toString("MM")).Replace("$DAY", startTime.toString("dd")).Replace("$HOUR", startTime.toString("HH")).Replace("$MIN", startTime.toString("mm")).Replace("$SEC", startTime.toString("ss")).Replace("$mSEC", startTime.toString("fff"))            
         ' console.wl(backupName)
+        ' ================== Checking for Invalid Symbols ========================
+            dim replaceWrongCharacterString as string = "_"
+            for each character  as string in Path.GetInvalidFileNameChars()
+            if backupName.Contains(character) then
+                    backupName = backupName.Replace(character, replaceWrongCharacterString)
+                    console.WL("ATTENTION ( line: " & me.CurrentLine.tostring()& "): Wrong characer in backup Filename: character """ & character & """ replaced with """ & replaceWrongCharacterString & """")
+                end if
+            next
+        ' ================== ============================= ========================
+        
         backupFullPath = Path.Combine(backupDirectory, backupName & presetExtention )
 
         dim counter         as integer = 1

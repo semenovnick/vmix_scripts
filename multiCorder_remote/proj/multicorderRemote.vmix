@@ -956,7 +956,7 @@ Console.WriteLine("Script done in " + scriptTime.TotalMilliseconds.ToString() + 
     <InputMapping12>12</InputMapping12>
     <InputMapping13>13</InputMapping13>
   </MultiViewSettings>
-  <MultiViewLayout>0</MultiViewLayout>
+  <MultiViewLayout>160</MultiViewLayout>
   <SafeAreas>None</SafeAreas>
   <WaveformPreview>None</WaveformPreview>
   <WaveformInput>None</WaveformInput>
