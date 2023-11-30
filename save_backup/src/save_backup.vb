@@ -1,18 +1,18 @@
 ' ===================== USER DEFINED SETTINGS =======================================================
 
-    dim backupFolderName as string = "BACKUP"
-    dim backupTemplate as string = "$NAME-backup_$DAY_$MONTH"
+    dim backupFolderName    as string = "BACKUP"
+    dim backupTemplate      as string = "$NAME-backup_$DAY_$MONTH"
 
     ' ==================================================================
-    '   $NAME - project name
-    '   $YEAR - four digits year
-    '   $YY - two digits year
-    '   $MONTH    
-    '   $DAY - number of date
-    '   $HOUR
-    '   $MIN 
-    '   $SEC
-    '   $mSEC
+    '   $NAME   - project name
+    '   $YEAR   - four digits year
+    '   $YY     - two digits year
+    '   $MONTH  - two digits year    
+    '   $DAY    - two digits day
+    '   $HOUR   - two digits hours
+    '   $MIN    - two digits minutes
+    '   $SEC    - two digits seconds
+    '   $mSEC   - three digits milliseconds
     ' ==================================================================
 
 ' ===================== =============================== =============================================
@@ -24,18 +24,16 @@
     dim config as new system.xml.xmldocument
 
     config.loadxml(API.XML)
-
-    
-    dim presetFullPath as string = ""
-    dim backupFullPath as string = ""
-    dim tempFolder as string = ".vmix_temp"
-    dim tempName as string = "temp.vmix"
-    dim myDocuments as string = My.Computer.FileSystem.SpecialDirectories.MyDocuments
-    dim presetNode as XMLNode
+  
+    dim presetFullPath  as string = ""
+    dim backupFullPath  as string = ""
+    dim tempFolder      as string = ".vmix_temp"
+    dim tempName        as string = "temp.vmix"
+    dim myDocuments     as string = My.Computer.FileSystem.SpecialDirectories.MyDocuments
+    dim presetNode      as XMLNode
 
     presetNode = config.SelectSingleNode("/vmix/preset")
 
-    
     ' =================== SAVING PRESET ===========================
 
         if presetNode isnot Nothing then
@@ -53,7 +51,7 @@
 
         dim presetDirectory as string = Path.GetDirectoryName(presetFullPath)
         dim presetExtention as string = Path.GetExtension(presetFullPath)
-        dim presetName as string = Path.GetFileNameWithoutExtension(presetFullPath) 
+        dim presetName      as string = Path.GetFileNameWithoutExtension(presetFullPath) 
         
         If Not System.IO.Directory.Exists(Path.combine(presetDirectory,backupFolderName)) Then
                 System.IO.Directory.CreateDirectory(Path.combine(presetDirectory,backupFolderName))
@@ -61,8 +59,8 @@
         End If
 
         dim backupDirectory as string = Path.combine(presetDirectory,backupFolderName)
-        dim backupName As String = backupTemplate.Replace("$NAME", presetName).Replace("$YEAR", startTime.toString("yyyy")).Replace("$YY", startTime.toString("yy")).Replace("$MONTH", startTime.toString("MM")).Replace("$DAY", startTime.toString("dd")).Replace("$HOUR", startTime.toString("HH")).Replace("$MIN", startTime.toString("mm")).Replace("$SEC", startTime.toString("ss")).Replace("$mSEC", startTime.toString("fff"))            
-        ' console.wl(backupName)
+        dim backupName      аs String = backupTemplate.Replace("$NAME", presetName).Replace("$YEAR", startTime.toString("yyyy")).Replace("$YY", startTime.toString("yy")).Replace("$MONTH", startTime.toString("MM")).Replace("$DAY", startTime.toString("dd")).Replace("$HOUR", startTime.toString("HH")).Replace("$MIN", startTime.toString("mm")).Replace("$SEC", startTime.toString("ss")).Replace("$mSEC", startTime.toString("fff"))            
+
         ' ================== Checking for Invalid Symbols ========================
             dim replaceWrongCharacterString as string = "_"
             for each character  as string in Path.GetInvalidFileNameChars()
@@ -96,7 +94,6 @@
                 API.Function("SavePreset", Value:= presetFullPath)
         end try
 ' ===================== =============================== =============================================
-
 
 scriptTime = System.DateTime.Now - startTime
 Console.WriteLine("Script done in " + scriptTime.TotalMilliseconds.ToString() + " milliseconds")
